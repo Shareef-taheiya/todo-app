@@ -1,0 +1,22 @@
+const fetchTodos = async () => {
+      if(userId){
+
+         try {
+
+          const response = await axios.get('https://66fd424fc3a184a84d19b66f.mockapi.io/todo/todos')
+
+           if (response.data.length > 0) {
+            const todos = response.data.filter(todo => todo.userId === userId);  // Filter todos based on user ID
+            setTodos(todos)
+           }else{
+            setTodos([])
+            setError('No todos found')
+           }
+
+      } catch (error) {
+        console.error('Error fetching todos:', error);
+        setError('Could not fetch todos');
+      } 
+      }
+      
+  };
