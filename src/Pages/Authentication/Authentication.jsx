@@ -40,7 +40,7 @@ const Authentication = () => {
     <div>
       {islogin?( 
         // Log In 
-        <div>
+        <div className='max-w-md items-center rounded-xl bg-white p-6 shadow-lg'>
           <h1>{currentUser? currentUser.name :''}</h1>
           <h1>{currentUser? currentUser.id :''}</h1>
           <button onClick={()=>setIsLogin(false)}>SignUp</button>
@@ -69,10 +69,10 @@ const Authentication = () => {
         </div>
         ):(
           // Sign Up
-        <div>
+        <div className='max-w-sm items-center space-x-4 rounded-xl bg-white p-6 shadow-lg'>
           <h1>{currentUser? currentUser.name :''}</h1>
           <h1>{currentUser? currentUser.id :''}</h1>
-          <button onClick={()=>setIsLogin(true)}>Login</button>
+          <button className='rounded-xl bg-white p-6 shadow-lg' onClick={()=>setIsLogin(true)}>Login</button>
           <h2>Sign Up</h2>
 
           <form onSubmit={handleSignUpSubmit}>
@@ -105,7 +105,7 @@ const Authentication = () => {
         </div>
         )}
       
-
+      
       
     </div>
   );
