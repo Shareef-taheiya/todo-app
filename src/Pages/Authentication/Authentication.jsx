@@ -1,101 +1,53 @@
-import{ useState} from 'react';
+import{ useContext, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { AuthContext } from '../../Context/AuthContext';
 
 
 
 const Authentication = () => {
+
+  const navigate = useNavigate();
+
   const [name, setName] = useState('');
   const [logEmail, setLogEmail] = useState('');
   const [logPassword, setLogPassword] = useState('');
   const [signEmail, setSignEmail] = useState('');
   const [signPassword, setSignPassword] = useState('');
-  const [error, setError] = useState('');
   const [islogin, setIsLogin] = useState(true);
-  
 
-  const navigate = useNavigate();
+  const { currentUser,error,handleLogin,handleSignUp } = useContext(AuthContext);
 
-
-  const handleLogin = async (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-      // Fetch the user based on the email
-      const response = await axios.get('https://66fd424fc3a184a84d19b66f.mockapi.io/todo/users', {
-        params: { email: logEmail },
-      });
-  
-      // Check if the user exists and validate the password manually
-      if (response.data.length > 0) {
-        const user = response.data[0];
-  
-        if (user.password === logPassword) {
-          const newLoginCount = user.loginCount + 1;
-  
-          await axios.put(`https://66fd424fc3a184a84d19b66f.mockapi.io/todo/users/${user.id}`, {
-            loginCount: newLoginCount,
-          });
-  
-          localStorage.setItem('user_Id', user.id);  // Store the correct user ID
-          navigate('/dashboard');
-        } else {
-          setError('Invalid password');
-        }
-      } else {
-        setError('Invalid email');
-      }
-    } catch (err) {
-      console.error(err);
-      setError('An error occurred');
-    }
-  };
-  
-
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    
-    try {
-      // Check if the user already exists
-      const response = await axios.get('https://66fd424fc3a184a84d19b66f.mockapi.io/todo/users')
-      const users = response.data;
-      const user = users.find(user => user.email === signEmail);
-      console.log('1');
-
-      if (user) {
-        setError('User already exists');
-      }else{// Proceed with sign-up if user does not exist
-        
-        const newUserResponse = await axios.post('https://66fd424fc3a184a84d19b66f.mockapi.io/todo/users', {
-          name,
-          email: signEmail,
-          password: signPassword,
-          loginCount: 1,
-        });
-
-        const newUser = newUserResponse.data;
-        localStorage.setItem('user_Id', newUser.id)
+    const result = await handleLogin(logEmail, logPassword);
+    if (result === 1) {
+      setInterval(() => {
         navigate('/dashboard');
-      }
-        
+      }, 2000);
       
-    } catch (err) {
-      console.error(err);
-      setError('An error occurred during sign-up');
     }
   };
 
+  const handleSignUpSubmit = async (e) => {
+    e.preventDefault();
+    const result = await handleSignUp(signEmail, signPassword, name);
+    if (result === 1) {
+      navigate('/dashboard');
+    }
+  };
 
   return (
     <div>
       {islogin?( 
         // Log In 
         <div>
+          <h1>{currentUser? currentUser.name :''}</h1>
+          <h1>{currentUser? currentUser.id :''}</h1>
           <button onClick={()=>setIsLogin(false)}>SignUp</button>
           <h2>Login</h2>
 
           {error && <h3>{error}</h3>}
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLoginSubmit}>
             <div>
               <label>Email:</label>
               <input
@@ -118,10 +70,12 @@ const Authentication = () => {
         ):(
           // Sign Up
         <div>
+          <h1>{currentUser? currentUser.name :''}</h1>
+          <h1>{currentUser? currentUser.id :''}</h1>
           <button onClick={()=>setIsLogin(true)}>Login</button>
           <h2>Sign Up</h2>
 
-          <form onSubmit={handleSignUp}>
+          <form onSubmit={handleSignUpSubmit}>
             <div>
               <label>Name:</label>
               <input
